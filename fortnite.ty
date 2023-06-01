@@ -1,2 +1,13 @@
-sus: int = 2
-sees: string = "SAS"
+integer : int = 2
+boolean:bool = false
+
+boolean = false
+
+print(integer, "\n")
+print(boolean, "\n")
+
+input_str: string
+
+input(input_str, "Enter a Number: ")
+
+print(input_str, "\n")

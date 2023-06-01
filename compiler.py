@@ -1,9 +1,15 @@
 import os
 import re, argparse
 
+from rewrites.print import parse_print
+from rewrites.input import parse_input
+from rewrites.warnings import warning, error
+from rewrites.arg_parse import argument_parser
+
 datatypes = {
     "int": "int",
     "string": "char*",
+    "char*": "char*",
     "float": "float",
     "double": "double",
     "char": "char",
@@ -12,26 +18,10 @@ datatypes = {
 
 statements = {
     ("print", r'print\(([^)]+)\)'): "printf",
-}
-print_types = {
-    "int": "%d",
-    "string": "%s",
-    "float": "%f",
-    "char*": "%s",
-    "bool": "%d"
+    ("input", r'input\(([^)]+)\)'): "scanf",
 }
 
 variables = {}
-
-def argument_parser(args: str):
-    args = [x.strip().lstrip() for x in args]
-    types = []
-    for arg in args:
-        if arg in variables.keys():
-            types.append((variables[arg], arg))
-        else:
-            types.append(arg.replace('"', "").replace("'", ""))
-    return types
 
 def compile_line(line: str, line_no: int):
     if line == "\n":
@@ -41,34 +31,32 @@ def compile_line(line: str, line_no: int):
         # Statement[0] = arguments
         # Statement[1] = original function name
         # Statement[2] = new function name
+        arguments = statement[0].split(',')
+        parsed_args = argument_parser(arguments, variables)
+        # Typecheck
         if statement[2] == "printf":
-            # Build Printf Command
-            arguments = statement[0].split(',')
-            parsed_args = argument_parser(arguments)
-            format_string = ""
-            for types in parsed_args:
-                if type(types) == tuple:
-                    format_string += print_types[types[0]]
-                else:
-                    format_string += types
-            variables_string = ""
-            for types in parsed_args:
-                if type(types) == tuple:
-                    variables_string += ", " + types[1]
-            return f"{statement[2]}(\"{format_string}\"{variables_string});\n"
-        return f"{statement[2]}(\"{print_types[variables[statement[0]]]}\", {statement[0]});\n"
-    
+            return parse_print(parsed_args, line_no)
+        elif statement[2] == "scanf":
+            return parse_input(parsed_args, line_no)
     splitted_line = [x.strip() for x in re.split(':|=', line)]
     for datatype in datatypes.keys():
         splitted_line[1] = splitted_line[1].replace(datatype, datatypes[datatype])
     if not variables.get(splitted_line[0], None):
         # We have a new variable (save type)
+        if not datatypes.get(splitted_line[1], None):
+            error(f"Error in Line {line_no}: Unknown datatype \"{splitted_line[1]}\"")
+        if datatypes.get(splitted_line[0], None):
+            error(f"Error in Line {line_no}: You can't name a variable like a datatype")
         variables[splitted_line[0]] = splitted_line[1]
-        return f"{splitted_line[1]} {splitted_line[0]} = {splitted_line[2]};\n"
+        if len(splitted_line) > 2:
+            return f"{splitted_line[1]} {splitted_line[0]} = {splitted_line[2]};\n"
+        else:
+            warning("Warning in Line " + str(line_no) + ": Variable not initialized (weird behaviour expected)")
+            return f"{splitted_line[1]} {splitted_line[0]};\n"
     else:
         # Variable already existing (typecheck)
         if len(splitted_line) > 2:
-            raise Exception(f"Error in Line {line_no}: Variable already existing")
+            error(f"Error in Line {line_no}: Variable already existing")
         return f"{splitted_line[0]} = {splitted_line[1]};\n"
     
 
@@ -89,7 +77,14 @@ def main():
     else:
         output_filename = filename.split('.')[0]
     code_lines = open(filename, 'r').readlines()
-    output = "#include <stdio.h>\n\nint main(void){\n"
+    # Detect Possible Libraries
+    output = "#include <stdio.h>\n"
+    if "bool" in "".join(code_lines):
+        output += "#include <stdbool.h>\n"
+    if "input" in "".join(code_lines):
+        output += "#include <stdlib.h>\n"
+
+    output += "\nint main(void){\n"
     for line, line_no in zip(code_lines, range(1, len(code_lines)+1)):
         output += compile_line(line, line_no)
     output += "return 0;\n}"
@@ -100,7 +95,7 @@ def main():
     if not args.dev:
         os.remove(tempc_filename)
     if args.run:
-        os.execl(output_filename)
+        os.execl(output_filename, output_filename)
 
 if __name__ == '__main__':
     main()
