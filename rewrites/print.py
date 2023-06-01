@@ -5,7 +5,8 @@ print_types = {
     "string": "%s",
     "float": "%f",
     "char*": "%s",
-    "bool": "%s"
+    "bool": "%s",
+    "double": "%lf",
 }
 
 def parse_print(parsed_args: tuple, line_no: int):
@@ -16,7 +17,7 @@ def parse_print(parsed_args: tuple, line_no: int):
             try:
                 format_string += print_types[types[0]]
             except KeyError:
-                error(f"Error in Line {line_no}: Unknown datatype")
+                error(f"Error on print() in Line {line_no}: Unknown datatype")
         else:
             format_string += types
     variables_string = ""

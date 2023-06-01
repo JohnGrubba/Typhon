@@ -47,7 +47,12 @@ def compile_line(line: str, line_no: int):
                     datatyp = datatypes[splitted_line[1]]
                 decl = f"{datatyp} {splitted_line[0]};\n"
                 variables[splitted_line[0]] = datatyp
-            return decl + parse_input(splitted_line[0], variables[splitted_line[0]])
+            # Print before scan (like in python)
+            prnt = ""
+            if len(parsed_args) >= 1:
+                prnt = parse_print(parsed_args, line_no)
+            return prnt + decl + parse_input(splitted_line[0], variables[splitted_line[0]], line_no)
+
     if len(splitted_line) <= 1:
         error(f"Error in Line {line_no}: Invalid Syntax")
     for datatype in datatypes.keys():
@@ -86,7 +91,7 @@ def main():
     if args.o:
         output_filename = args.o
     else:
-        output_filename = filename.split('.')[0]
+        output_filename = filename.split('.')[0] + ".out"
     code_lines = open(filename, 'r').readlines()
     # Detect Possible Libraries
     output = "#include <stdio.h>\n"

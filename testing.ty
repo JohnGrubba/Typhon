@@ -1,3 +1,8 @@
-sus:string
-sus = input("sdkfjasödfj") asjdfjasd
-print(sus, "\n") afd asdf asdfasd fasfd a
+sos:double = input("Enter a Double: ")
+print(sos, "\n")
+
+sus: float = input("Enter a Float: ")
+print(sus, "\n")
+
+sees:int = input("Enter a Integer: ")
+print(sees, "\n")
