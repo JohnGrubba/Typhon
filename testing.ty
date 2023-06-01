@@ -1,7 +1,3 @@
-print("Enter your Name: ")
-user_name: string
-user_name = input()
-age: string
-print("Enter your Age: ")
-age = input()
-print("You are ", user_name, " and you are ", age, " years old!\n")
+sus:string
+sus = input("sdkfjasödfj") asjdfjasd
+print(sus, "\n") afd asdf asdfasd fasfd a

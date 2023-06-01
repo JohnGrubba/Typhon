@@ -40,8 +40,16 @@ def compile_line(line: str, line_no: int):
         if statement[2] == "printf":
             return parse_print(parsed_args, line_no)
         elif statement[2] == "scanf":
-            return parse_input(splitted_line[0])
-
+            decl = ""
+            if not variables.get(splitted_line[0], None):
+                datatyp = "char*"
+                if datatypes.get(splitted_line[1], None):
+                    datatyp = datatypes[splitted_line[1]]
+                decl = f"{datatyp} {splitted_line[0]};\n"
+                variables[splitted_line[0]] = datatyp
+            return decl + parse_input(splitted_line[0], variables[splitted_line[0]])
+    if len(splitted_line) <= 1:
+        error(f"Error in Line {line_no}: Invalid Syntax")
     for datatype in datatypes.keys():
         splitted_line[1] = splitted_line[1].replace(datatype, datatypes[datatype])
     if not variables.get(splitted_line[0], None):
