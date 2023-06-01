@@ -14,7 +14,7 @@ printf("%s\n", boolean ? "true" : "false", boolean);
 char* input_str;
 
 input_str = malloc(100 * sizeof(char));
-scanf("%sEnter a Number: ", input_str);
+scanf("%s", input_str);
 
 printf("%s\n", input_str);
 return 0;

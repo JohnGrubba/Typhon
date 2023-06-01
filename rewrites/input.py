@@ -19,9 +19,6 @@ def parse_input(parsed_args: tuple, line_no: int):
                 error(f"Error in Line {line_no}: Unknown datatype")
         else:
             format_string += types
-    variables_string = ""
-    for types in parsed_args[::-1]:
-        if type(types) == tuple:
-            variables_string += ", " + types[1]
+    variables_string = ", " + parsed_args[-1][1]
     free_memory_string = "input_str = malloc(100 * sizeof(char));\n"
     return free_memory_string +f"scanf(\"{format_string}\"{variables_string});\n"

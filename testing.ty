@@ -8,6 +8,6 @@ print(boolean, "\n")
 
 input_str: string
 
-input(input_str, "Enter a Number: ")
+input(input_str)
 
 print(input_str, "\n")
