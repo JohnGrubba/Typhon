@@ -8,17 +8,8 @@ scan_types = {
     "bool": "%s"
 }
 
-def parse_input(parsed_args: tuple, line_no: int):
+def parse_input(assign_to: str):
     # Build Scanf Command
-    format_string = ""
-    for types in parsed_args:
-        if type(types) == tuple:
-            try:
-                format_string += scan_types[types[0]]
-            except KeyError:
-                error(f"Error in Line {line_no}: Unknown datatype")
-        else:
-            format_string += types
-    variables_string = ", " + parsed_args[-1][1]
-    free_memory_string = "input_str = malloc(100 * sizeof(char));\n"
-    return free_memory_string +f"scanf(\"{format_string}\"{variables_string});\n"
+    variables_string = ", " + assign_to
+    free_memory_string = assign_to + " = malloc(100 * sizeof(char));\n"
+    return free_memory_string +f"scanf(\"%[^\\n]%*c\"{variables_string});\n"

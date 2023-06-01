@@ -26,19 +26,22 @@ variables = {}
 def compile_line(line: str, line_no: int):
     if line == "\n":
         return line
-    for statement in [(re.sub(x[1], r'\1', line), x[0], statements[x]) for x in statements.keys() if re.search(x[1], line)]:
+    splitted_line = [x.strip() for x in re.split(':|=', line)]
+    for statement in [(re.findall(x[1], line), x[0], statements[x]) for x in statements.keys() if x[0] in line]:
         # Statement description
         # Statement[0] = arguments
         # Statement[1] = original function name
         # Statement[2] = new function name
-        arguments = statement[0].split(',')
+        arguments = []
+        if not len(statement[0]) == 0:
+            arguments = statement[0][0].split(',')
         parsed_args = argument_parser(arguments, variables)
         # Typecheck
         if statement[2] == "printf":
             return parse_print(parsed_args, line_no)
         elif statement[2] == "scanf":
-            return parse_input(parsed_args, line_no)
-    splitted_line = [x.strip() for x in re.split(':|=', line)]
+            return parse_input(splitted_line[0])
+
     for datatype in datatypes.keys():
         splitted_line[1] = splitted_line[1].replace(datatype, datatypes[datatype])
     if not variables.get(splitted_line[0], None):

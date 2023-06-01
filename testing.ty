@@ -1,13 +1,7 @@
-integer : int = 2
-boolean:bool = false
-
-boolean = false
-
-print(integer, "\n")
-print(boolean, "\n")
-
-input_str: string
-
-input(input_str)
-
-print(input_str, "\n")
+print("Enter your Name: ")
+user_name: string
+user_name = input()
+age: string
+print("Enter your Age: ")
+age = input()
+print("You are ", user_name, " and you are ", age, " years old!\n")
