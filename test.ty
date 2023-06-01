@@ -1,4 +1,0 @@
-rechi: float = 2.5
-rechi_namme: string = "Rechberger"
-
-print(rechi_namme, " ist ", rechi, " Meter groß.\n")

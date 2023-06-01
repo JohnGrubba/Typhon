@@ -81,7 +81,7 @@ def main():
     parser.add_argument('--run', action='store_true')
     args = parser.parse_args()
     try:
-        filename = args.filename
+        filename = str(args.filename)
     except:
         raise Exception('No filename provided')
     if args.o:
@@ -93,12 +93,14 @@ def main():
     for line, line_no in zip(code_lines, range(1, len(code_lines)+1)):
         output += compile_line(line, line_no)
     output += "return 0;\n}"
-    open(filename.split(".")[0] + ".c", 'w').write(output)
-    os.system("gcc " + filename.split(".")[0] + ".c" + " -o " + output_filename)
+    # Compute Temp Filename
+    tempc_filename = "temp.c"
+    open(tempc_filename, 'w').write(output)
+    os.system("gcc " + tempc_filename + " -o " + output_filename)
     if not args.dev:
-        os.system("rm " + filename.split(".")[0] + ".c")
+        os.remove(tempc_filename)
     if args.run:
-        os.system("./" + output_filename)
+        os.execl(output_filename)
 
 if __name__ == '__main__':
     main()
